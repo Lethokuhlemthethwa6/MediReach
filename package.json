@@ -1,0 +1,28 @@
+{
+  "name": "medireach",
+  "version": "1.0.0",
+  "description": "MediReach - Medical Appointments & Reminders System (MERN Stack)",
+  "main": "index.js",
+  "scripts": {
+    "install-backend": "cd backend && npm install",
+    "install-frontend": "cd frontend && npm install",
+    "install-all": "npm run install-backend && npm run install-frontend",
+    "dev-backend": "cd backend && npm run dev",
+    "dev-frontend": "cd frontend && npm run dev",
+    "start-backend": "cd backend && npm start",
+    "start-frontend": "cd frontend && npm run preview",
+    "build-frontend": "cd frontend && npm run build"
+  },
+  "keywords": [
+    "healthcare",
+    "appointments",
+    "mern",
+    "mongodb",
+    "express",
+    "react",
+    "nodejs",
+    "sdg3"
+  ],
+  "author": "PLP Africa Student",
+  "license": "MIT"
+}

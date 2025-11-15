@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediReach Network Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        .test-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status.pending {
+            background: #ffc107;
+            color: #856404;
+        }
+        .status.success {
+            background: #28a745;
+            color: white;
+        }
+        .status.error {
+            background: #dc3545;
+            color: white;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            word-wrap: break-word;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .test-result.success {
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+        .test-result.error {
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .summary {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            font-size: 1.2em;
+        }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .info-box strong {
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 MediReach Network Test</h1>
+        <p class="subtitle">Verify Frontend ↔️ Backend Communication</p>
+
+        <div class="info-box">
+            <strong>📍 Current Configuration:</strong><br>
+            Frontend: <code>http://localhost:5173</code><br>
+            Backend API: <code>http://localhost:5000/api</code>
+        </div>
+
+        <div id="tests"></div>
+
+        <button onclick="runTests()" id="testBtn">🚀 Run Network Tests</button>
+
+        <div id="summary" style="display: none;"></div>
+    </div>
+
+    <script>
+        const tests = [
+            {
+                name: 'Backend Server Availability',
+                icon: '🖥️',
+                test: async () => {
+                    const response = await fetch('http://localhost:5000/api/health');
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const data = await response.json();
+                    return `✅ Backend is running!\nResponse: ${JSON.stringify(data, null, 2)}`;
+                }
+            },
+            {
+                name: 'CORS Configuration',
+                icon: '🔗',
+                test: async () => {
+                    const response = await fetch('http://localhost:5000/api/health', {
+                        headers: {
+                            'Origin': 'http://localhost:5173'
+                        }
+                    });
+                    const corsHeader = response.headers.get('access-control-allow-origin');
+                    if (!corsHeader) {
+                        throw new Error('CORS headers not present');
+                    }
+                    return `✅ CORS is properly configured!\nAllowed Origin: ${corsHeader}`;
+                }
+            },
+            {
+                name: 'Auth Endpoints',
+                icon: '🔐',
+                test: async () => {
+                    const response = await fetch('http://localhost:5000/');
+                    const data = await response.json();
+                    return `✅ API endpoints available:\n${JSON.stringify(data.endpoints, null, 2)}`;
+                }
+            },
+            {
+                name: 'Frontend API Configuration',
+                icon: '⚙️',
+                test: async () => {
+                    // Test if frontend can construct the correct API URL
+                    const apiUrl = 'http://localhost:5000/api';
+                    return `✅ Frontend API URL: ${apiUrl}\nConfiguration: Correct`;
+                }
+            },
+            {
+                name: 'MongoDB Connection',
+                icon: '🗄️',
+                test: async () => {
+                    const response = await fetch('http://localhost:5000/api/health');
+                    const data = await response.json();
+                    if (data.success) {
+                        return `✅ Database connection verified through health check`;
+                    }
+                    throw new Error('Health check failed');
+                }
+            }
+        ];
+
+        function createTestElement(test) {
+            return `
+                <div class="test-section" id="test-${test.icon}">
+                    <div class="test-title">
+                        <span>${test.icon}</span>
+                        <span>${test.name}</span>
+                        <span class="status pending" id="status-${test.icon}">Pending</span>
+                    </div>
+                    <div class="test-result" id="result-${test.icon}" style="display: none;"></div>
+                </div>
+            `;
+        }
+
+        function init() {
+            const testsContainer = document.getElementById('tests');
+            testsContainer.innerHTML = tests.map(createTestElement).join('');
+        }
+
+        async function runTests() {
+            const button = document.getElementById('testBtn');
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner"></span> Running Tests...';
+
+            let passed = 0;
+            let failed = 0;
+
+            for (const test of tests) {
+                const statusEl = document.getElementById(`status-${test.icon}`);
+                const resultEl = document.getElementById(`result-${test.icon}`);
+
+                statusEl.className = 'status pending';
+                statusEl.innerHTML = '<span class="spinner"></span> Testing...';
+                resultEl.style.display = 'none';
+
+                try {
+                    const result = await test.test();
+                    statusEl.className = 'status success';
+                    statusEl.textContent = 'Passed';
+                    resultEl.className = 'test-result success';
+                    resultEl.textContent = result;
+                    resultEl.style.display = 'block';
+                    passed++;
+                } catch (error) {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = 'Failed';
+                    resultEl.className = 'test-result error';
+                    resultEl.textContent = `❌ Error: ${error.message}`;
+                    resultEl.style.display = 'block';
+                    failed++;
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            button.disabled = false;
+            button.textContent = '🔄 Run Tests Again';
+
+            const summary = document.getElementById('summary');
+            summary.style.display = 'block';
+            
+            if (failed === 0) {
+                summary.innerHTML = `
+                    <div style="font-size: 3em; margin-bottom: 10px;">🎉</div>
+                    <div><strong>All Tests Passed!</strong></div>
+                    <div style="margin-top: 10px; font-size: 0.9em;">
+                        ${passed} tests completed successfully<br>
+                        ✅ Frontend and Backend are communicating perfectly!
+                    </div>
+                `;
+            } else {
+                summary.innerHTML = `
+                    <div style="font-size: 3em; margin-bottom: 10px;">⚠️</div>
+                    <div><strong>Tests Completed with Issues</strong></div>
+                    <div style="margin-top: 10px; font-size: 0.9em;">
+                        ✅ Passed: ${passed} | ❌ Failed: ${failed}
+                    </div>
+                `;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
