@@ -11,6 +11,7 @@
 | **Frontend (Vercel)** | [https://medi-reach-n2cyvdvct-lethokuhle-mthethwas-projects.vercel.app](https://medi-reach-n2cyvdvct-lethokuhle-mthethwas-projects.vercel.app) |
 | **Backend API (Render)** | [https://medireach-dz94.onrender.com](https://medireach-dz94.onrender.com) |
 | **GitHub Repository** | [https://github.com/Lethokuhlemthethwa6/MediReach.git](https://github.com/Lethokuhlemthethwa6/MediReach.git) |
+| **Pitchdeck** | .[https://www.canva.com/design/DAG44lc6YFU/YFunbfCQ4B_D-pdXJ1VWXA/edit?utm_content=DAG44lc6YFU&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) |
 
 ---
 
